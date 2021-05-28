@@ -88,8 +88,6 @@ def moveDrums():
                         if drumPositions[drum] >= fullTurn:
                             drumPositions[drum] -= fullTurn
                             drumTargetPositions[drum] -= fullTurn
-#                if (drum == 0):
-#		    print("patching excess: ", drumPositions[drum], drumTargetPositions[drum])
 
                     GPIO.output(controlPins[drum][pin], seq[step][pin])
 
@@ -137,8 +135,8 @@ try:
                 drumTargetPositions[drum] = newPos
 
                 if drumTargetPositions[drum] > drumPositions[drum]:
-		    if drum == 0:
-                        isDrumActive[drum] = True
+#		    if drum == 0:
+                    isDrumActive[drum] = True
 
                 else:
                     isDrumActive[drum] = False
