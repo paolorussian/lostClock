@@ -39,6 +39,7 @@ seq = [ [1,0,0,1],
 
 drumPositions = [0,0,0,0,0]
 drumTargetPositions = [0,0,0,0,0]
+drumOffsets = [0,20,0,0,0]
 
 simpleCounter = 0
 mode = "CRONO"
@@ -59,7 +60,8 @@ def readSensors():
         else:
             if isSensorHit[drum]:
 
-                drumPositions[drum] = 0 # self calibrate position
+#                drumPositions[drum] = 0 # self calibrate position
+                drumPositions[drum] = drumOffsets[drum]
 
                 if not isCalibrated[drum]:
                     isCalibrated[drum] = True
@@ -130,16 +132,14 @@ try:
 
             else:                         # if this drum is already calibrated, behave normally
 
-#		newPos = flapsCrono[simpleCounter] * stepsPerFlap
                 newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
 
 		if newPos < drumTargetPositions[drum]:
 		    newPos += fullTurn
 
-                drumTargetPositions[drum] = newPos
+                drumTargetPositions[drum] = newPos # + drumOffsets[drum]
 
-                if drumTargetPositions[drum] > drumPositions[drum]:
-#		    if drum == 0:
+                if drumTargetPositions[drum] > drumPositions[drum] + drumOffsets[drum]:
                     isDrumActive[drum] = True
 
                 else:
