@@ -106,14 +106,19 @@ try:
             current_time = time.time()
 
             tick = int(current_time - start_time)
-	    if tick > 9:
-		tick = 0
-		start_time = current_time
+#	    if tick > 9:
+#		tick = 0
+#		start_time = current_time
 
-            if tick != simpleCounter:
-                print(tick, drumPositions[0], drumTargetPositions[0])
+
+#            if tick != simpleCounter:
+#                print(tick, drumPositions[0], drumTargetPositions[0])
 
             simpleCounter = tick
+
+            flapTargets = map(int, str(simpleCounter).zfill(5))
+	    flapTargets.reverse()
+#	    print(flapTargets)
 
 
 
@@ -125,12 +130,11 @@ try:
 
             else:                         # if this drum is already calibrated, behave normally
 
-		newPos = flapsCrono[simpleCounter] * stepsPerFlap
+#		newPos = flapsCrono[simpleCounter] * stepsPerFlap
+                newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
 
 		if newPos < drumTargetPositions[drum]:
 		    newPos += fullTurn
-#		    drumPositions[drum] = drumPositions[drum] - fullTurn
-#                    print("position reset to (2): ", drumPositions[drum])
 
                 drumTargetPositions[drum] = newPos
 
