@@ -1,8 +1,7 @@
-
-
-
 import RPi.GPIO as GPIO
 import time
+import sys
+import traceback
 
 GPIO.setwarnings(False)
 
@@ -49,9 +48,9 @@ stepsPerFlap = fullTurn / 20
 flapsCrono = [0,1,2,3,4,5,6,7,8,11]
 
 def readSensors():
-    global pinSensors
-    global isSensorHit
-    global isCalibrated
+    #global pinSensors
+    #global isSensorHit
+    #global isCalibrated
 
     for drum in range(numberOfDrums):
 
@@ -64,8 +63,11 @@ def readSensors():
                 drumPositions[drum] = drumOffsets[drum]
 
                 if not isCalibrated[drum]:
+                    
                     isCalibrated[drum] = True
+                    
                 isSensorHit[drum] = False
+                
 
 
 ###########################################
@@ -92,8 +94,8 @@ def moveDrums():
                             drumTargetPositions[drum] -= fullTurn
 
                     GPIO.output(controlPins[drum][pin], seq[step][pin])
-
                 else:
+                    
                     GPIO.output(controlPins[drum][pin], GPIO.LOW)
 
         time.sleep(0.002)
@@ -106,21 +108,11 @@ try:
 
         if mode == "CRONO":
             current_time = time.time()
-
             tick = int(current_time - start_time)
-#	    if tick > 9:
-#		tick = 0
-#		start_time = current_time
-
-
-#            if tick != simpleCounter:
-#                print(tick, drumPositions[0], drumTargetPositions[0])
-
             simpleCounter = tick
-
-            flapTargets = map(int, str(simpleCounter).zfill(5))
-	    flapTargets.reverse()
-#	    print(flapTargets)
+            flapTargets = list(map(int, str(simpleCounter).zfill(5)))
+            flapTargets.reverse()
+#           print(flapTargets)
 
 
 
@@ -134,8 +126,8 @@ try:
 
                 newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
 
-		if newPos < drumTargetPositions[drum]:
-		    newPos += fullTurn
+                if newPos < drumTargetPositions[drum]:
+                    newPos += fullTurn
 
                 drumTargetPositions[drum] = newPos # + drumOffsets[drum]
 
@@ -145,14 +137,17 @@ try:
                 else:
                     isDrumActive[drum] = False
 
-	readSensors()
+        readSensors()
         moveDrums()
 
 except KeyboardInterrupt:
     print("Interrupted by keyboard")
 
-except:
+except Exception as err:
     print("EXCEPTION!")
+    print("Ops!", err)
+    
+    
 
 finally:
     #GPIO.cleanup()
