@@ -38,7 +38,7 @@ seq = [ [1,0,0,1],
 
 drumPositions = [0,0,0,0,0]
 drumTargetPositions = [0,0,0,0,0]
-drumOffsets = [0,20,0,0,0]
+drumOffsets = [0,10,0,0,0]
 
 simpleCounter = 0
 mode = "CRONO"
@@ -110,12 +110,9 @@ try:
             current_time = time.time()
             tick = int(current_time - start_time)
             simpleCounter = tick
+
             flapTargets = list(map(int, str(simpleCounter).zfill(5)))
             flapTargets.reverse()
-#           print(flapTargets)
-
-
-
 
         for drum in range(numberOfDrums):
 
