@@ -1,6 +1,3 @@
-
-
-
 import RPi.GPIO as GPIO
 import time
 
@@ -39,7 +36,7 @@ seq = [ [1,0,0,1],
 
 drumPositions = [0,0,0,0,0]
 drumTargetPositions = [0,0,0,0,0]
-drumOffsets = [0,20,0,0,0]
+drumOffsets = [0,10,0,0,0]
 
 simpleCounter = 0
 mode = "CRONO"
@@ -119,6 +116,7 @@ try:
             simpleCounter = tick
 
             flapTargets = map(int, str(simpleCounter).zfill(5))
+#	    flapTargets = [1,0,8,0,0]
 	    flapTargets.reverse()
 #	    print(flapTargets)
 
