@@ -113,6 +113,7 @@ try:
 
             flapTargets = list(map(int, str(simpleCounter).zfill(5)))
             flapTargets.reverse()
+            flapTargets = [flapTargets[0],flapTargets[0],flapTargets[0],flapTargets[0],flapTargets[0]]
 
         for drum in range(numberOfDrums):
 

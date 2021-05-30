@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import datetime
 import sys
 import traceback
 
@@ -41,11 +42,13 @@ drumTargetPositions = [0,0,0,0,0]
 drumOffsets = [0,20,0,0,0]
 
 simpleCounter = 0
-mode = "CRONO"
+mode = "CLOCK"
 fullTurn = 2042;
 stepsPerFlap = fullTurn / 20
 
 flapsCrono = [0,1,2,3,4,5,6,7,8,11]
+flapsHieroglyphPosition = 1024
+flapsEmptyPosition = 922
 
 def readSensors():
     #global pinSensors
@@ -63,11 +66,9 @@ def readSensors():
                 drumPositions[drum] = drumOffsets[drum]
 
                 if not isCalibrated[drum]:
-                    
                     isCalibrated[drum] = True
-                    
                 isSensorHit[drum] = False
-                
+
 
 
 ###########################################
@@ -95,7 +96,6 @@ def moveDrums():
 
                     GPIO.output(controlPins[drum][pin], seq[step][pin])
                 else:
-                    
                     GPIO.output(controlPins[drum][pin], GPIO.LOW)
 
         time.sleep(0.002)
@@ -103,6 +103,12 @@ def moveDrums():
 ###########################################
 try:
     start_time = time.time()
+
+#    x = datetime.datetime.now()
+#    hour = '{:02d}'.format(x.hour)
+#    hourArr = list(map(int, str(x.hour).zfill(2)))
+#    print(hourArr[0], hourArr[1])
+
 
     while True:
 
@@ -112,8 +118,12 @@ try:
             simpleCounter = tick
             flapTargets = list(map(int, str(simpleCounter).zfill(5)))
             flapTargets.reverse()
-#           print(flapTargets)
-
+        elif mode == "CLOCK":
+            now = datetime.datetime.now()
+            hourArr = list(map(int, str(now.hour).zfill(2)))
+            minArr = list(map(int, str(now.minute).zfill(2)))
+            flapTargets = [-1, hourArr[0], hourArr[1], minArr[0], minArr[1]]
+            flapTargets.reverse()
 
 
 
@@ -124,7 +134,10 @@ try:
 
             else:                         # if this drum is already calibrated, behave normally
 
-                newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
+                if flapTargets[drum] != -1:
+                    newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
+                else:
+                    newPos = flapsEmptyPosition
 
                 if newPos < drumTargetPositions[drum]:
                     newPos += fullTurn
