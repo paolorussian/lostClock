@@ -9,7 +9,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 #GPIO.setmode(GPIO.BOARD)
 
-pinSensors = [27,22,5,24,25]
+pinSensors = [27,22,5,24,8]
 
 controlPins = [ [2,3,4,17],
                 [10,9,11,0],
