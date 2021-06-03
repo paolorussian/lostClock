@@ -42,11 +42,15 @@ drumTargetPositions = [0,0,0,0,0]
 drumOffsets = [0,20,0,0,0]
 
 simpleCounter = 0
-mode = "CLOCK"
+#mode = "CLOCK"
+mode = "LOST"
+timerLostMinutes = 108
+timerLostSeconds = 00
 fullTurn = 2042;
 stepsPerFlap = fullTurn / 20
 
 flapsCrono = [0,1,2,3,4,5,6,7,8,11]
+flapsTimer = [0,19,18,17,16,15,14,13,12,11]
 flapsHieroglyphPosition = 1024
 flapsEmptyPosition = 922
 
@@ -103,6 +107,7 @@ def moveDrums():
 ###########################################
 try:
     start_time = time.time()
+    current_time = start_time
 
 #    x = datetime.datetime.now()
 #    hour = '{:02d}'.format(x.hour)
@@ -112,12 +117,43 @@ try:
 
     while True:
 
+        current_time = time.time()
+
         if mode == "CRONO":
-            current_time = time.time()
+#            current_time = time.time()
             tick = int(current_time - start_time)
             simpleCounter = tick
             flapTargets = list(map(int, str(simpleCounter).zfill(5)))
             flapTargets.reverse()
+
+        elif mode == "LOST":
+#            time.sleep(1)
+#            print(time.time() - start_time >= 1)
+            if time.time() - start_time >= 1:
+               start_time = time.time()
+               timerLostSeconds -= 1
+               if timerLostSeconds < 1:
+#                   if timerLostMinutes > 0:
+#                       timerLostSeconds = 10
+#                   if timerLostMinutes >= 1:
+#                       timerLostMinutes  -= 1
+                   if timerLostMinutes > 0:
+                       timerLostSeconds = 60
+                       if timerLostMinutes >= 1:
+                           timerLostMinutes -= 1 
+                   else:
+                       timerLostSeconds = 0
+
+#            print(timerLostMinutes, timerLostSeconds)
+            valueMinutes = list(map(int,str(timerLostMinutes).zfill(3)))
+            if timerLostMinutes > 4:
+                valueSeconds = [0, 0]
+            else:
+                valueSeconds = list(map(int,str(timerLostSeconds).zfill(2)))
+
+            flapTargets = [valueMinutes[0],valueMinutes[1],valueMinutes[2], valueSeconds[0],valueSeconds[1]]
+            flapTargets.reverse()
+
         elif mode == "CLOCK":
             now = datetime.datetime.now()
             hourArr = list(map(int, str(now.hour).zfill(2)))
@@ -135,7 +171,10 @@ try:
             else:                         # if this drum is already calibrated, behave normally
 
                 if flapTargets[drum] != -1:
-                    newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
+                    if mode == "CLOCK":
+                        newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
+                    elif mode == "LOST":
+                        newPos = flapsTimer[flapTargets[drum]] * stepsPerFlap
                 else:
                     newPos = flapsEmptyPosition
 
@@ -152,6 +191,15 @@ try:
 
         readSensors()
         moveDrums()
+
+#        if True:
+#        if isDrumActive[0] == False and isDrumActive[1] == False and isDrumActive[2] == False and isDrumActive[3] == False and isDrumActive[4] == False:
+#            if mode == "LOST" and timerLostMinutes >= 0:
+#                time.sleep(1)
+#                timerLostSeconds -= 1
+#                if timerLostSeconds < 0:
+#                    timerLostSeconds = 60
+#                    timerLostMinutes -= 1
 
 except KeyboardInterrupt:
     print("Interrupted by keyboard")
