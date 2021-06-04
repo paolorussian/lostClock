@@ -3,6 +3,38 @@ import time
 import datetime
 import sys
 import traceback
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import http.server
+#from server2 import MyServer
+from urllib.parse import urlparse
+import socketserver
+import threading
+
+
+hostName = "192.168.0.2"
+serverPort = 8081
+serverEnabled = False
+
+class MyServer(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/":
+            self.path = "index.html"
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        else:
+            parsedPath = urlparse(self.path)
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(bytes("<html><head><title>https://pythonbasics.org</title></head>", "utf-8"))
+            self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
+            self.wfile.write(bytes("<p>Real path: %s</p>" % parsedPath.path, "utf-8"))
+            self.wfile.write(bytes("<p>query: %s</p>" % parsedPath.query, "utf-8"))
+            self.wfile.write(bytes("<body>", "utf-8"))
+            self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
+            self.wfile.write(bytes("</body></html>", "utf-8"))
+
+#######################################################
+
 
 GPIO.setwarnings(False)
 
@@ -39,11 +71,11 @@ seq = [ [1,0,0,1],
 
 drumPositions = [0,0,0,0,0]
 drumTargetPositions = [0,0,0,0,0]
-drumOffsets = [0,20,0,0,0]
+drumOffsets = [0,0,0,0,0]
 
 simpleCounter = 0
-#mode = "CLOCK"
-mode = "LOST"
+mode = "CLOCK"
+#mode = "LOST"
 timerLostMinutes = 109
 timerLostSeconds = 00
 fullTurn = 2042;
@@ -106,14 +138,22 @@ def moveDrums():
 
 ###########################################
 try:
+
+    if __name__ == "__main__" and serverEnabled:
+        #webServer = HTTPServer((hostName, serverPort), MyServer)
+        webServer = socketserver.TCPServer((hostName, serverPort), MyServer)
+        print("Server started http://%s:%s" % (hostName, serverPort))
+
+        try:
+            threading.Thread(target=webServer.serve_forever).start()
+        except KeyboardInterrupt:
+            pass
+
+#        webServer.server_close()
+#        print("Server stopped.")
+
     start_time = time.time()
     current_time = start_time
-
-#    x = datetime.datetime.now()
-#    hour = '{:02d}'.format(x.hour)
-#    hourArr = list(map(int, str(x.hour).zfill(2)))
-#    print(hourArr[0], hourArr[1])
-
 
     while True:
 
