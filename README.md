@@ -42,5 +42,10 @@ Also note that in this project the numbering is [0,1,2,3,4,5,6,7,8, BLANK, HIERO
 
 ![photo interrupter](https://github.com/paolorussian/lostClock/blob/451074e7f9f27683f22044545b78cf1b7188a1a2/images/imageB.jpg) *photo interrupter*
 
+![webserver](https://github.com/paolorussian/lostClock/blob/7ecc90296b30de98ed7c18913465e39b8d1c72f9/images/webserver.png) *web interface to switch or reset mode*
+
+
 credits:
 https://www.thingiverse.com/thing:3493999 Martin1111 for the drum and flap design, which I modified to accomodate the room for the photo interrupters.
+
+
