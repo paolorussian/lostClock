@@ -1,7 +1,7 @@
 # "Swan" station flip-clock project files:
 ![image 1](https://github.com/paolorussian/lostClock/blob/5f43896d0ff5e7c20ffe9cf4e77e6e32e430e3fd/images/image1.jpg)
 
-## THIS IS NOT MEANT TO BE A TUTORIAL
+## THIS IS NOT A TUTORIAL
 
 This LOST clock replica is a raspberry pi - based device which emulate the 108 minutes countdown from the show, but can also function as a regular clock. Mode switch can be made by pushing a html button in a webserver running from the same single python file.
 
