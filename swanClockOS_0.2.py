@@ -3,37 +3,60 @@ import time
 import datetime
 import sys
 import traceback
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import http.server
+#from http.server import BaseHTTPRequestHandler, HTTPServer
+#import http.server
 #from server2 import MyServer
-from urllib.parse import urlparse
-import socketserver
+#from urllib.parse import urlparse
+#import socketserver
 import threading
+import vlc
+from flask import (Flask, render_template, request)
+
+
+
+app = Flask(__name__)
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/switch")
+def changeMode():
+    global mode
+    global start_time
+    global current_time
+    global isCalibrated
+
+    m = request.args.get("mode", type = str)
+    print("pre", mode, "will change in", m)
+
+    if m=="LOST":
+        print("setting LOST")
+        mode=m
+        timerLostMinutes = 109
+        timerLostSeconds = 00
+    elif m=="CLOCK":
+        print("setting CLOCK")
+        start_time=time.time()
+        current_time=start_time
+        mode=m
+        isCalibrated=[False,False,False,False,False]
+
+    print("post",mode)
+    return render_template("index.html")
+
+
+
+#/home/pi/Documents/python/lostClock
+beepA = vlc.MediaPlayer("file:///home/pi/Documents/python/lostClock/beepA.mp3")
+beepB = vlc.MediaPlayer("file:///home/pi/Documents/python/lostClock/beepB.mp3")
 
 
 hostName = "192.168.0.2"
 serverPort = 8081
 serverEnabled = False
+soundsEnabled = False
 
-class MyServer(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/":
-            self.path = "index.html"
-            return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        else:
-            parsedPath = urlparse(self.path)
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write(bytes("<html><head><title>https://pythonbasics.org</title></head>", "utf-8"))
-            self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
-            self.wfile.write(bytes("<p>Real path: %s</p>" % parsedPath.path, "utf-8"))
-            self.wfile.write(bytes("<p>query: %s</p>" % parsedPath.query, "utf-8"))
-            self.wfile.write(bytes("<body>", "utf-8"))
-            self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
-            self.wfile.write(bytes("</body></html>", "utf-8"))
-
-#######################################################
+######################################################
 
 
 GPIO.setwarnings(False)
@@ -77,6 +100,7 @@ simpleCounter = 0
 mode = "CLOCK"
 #mode = "LOST"
 timerLostMinutes = 109
+#timerLostMinutes = 3
 timerLostSeconds = 00
 fullTurn = 2042;
 stepsPerFlap = fullTurn / 20
@@ -137,20 +161,15 @@ def moveDrums():
         time.sleep(0.002)
 
 ###########################################
+
+def serverStart():
+    app.run(host="0.0.0.0", port = "5000", threaded=True, use_reloader=False)
+
 try:
 
-    if __name__ == "__main__" and serverEnabled:
-        #webServer = HTTPServer((hostName, serverPort), MyServer)
-        webServer = socketserver.TCPServer((hostName, serverPort), MyServer)
-        print("Server started http://%s:%s" % (hostName, serverPort))
-
-        try:
-            threading.Thread(target=webServer.serve_forever).start()
-        except KeyboardInterrupt:
-            pass
-
-#        webServer.server_close()
-#        print("Server stopped.")
+    if __name__ == "__main__":
+        app.config.host = "0.0.0.0"
+        threading.Thread(target=serverStart).start()
 
     start_time = time.time()
     current_time = start_time
@@ -160,31 +179,41 @@ try:
         current_time = time.time()
 
         if mode == "CRONO":
-#            current_time = time.time()
             tick = int(current_time - start_time)
             simpleCounter = tick
             flapTargets = list(map(int, str(simpleCounter).zfill(5)))
             flapTargets.reverse()
 
         elif mode == "LOST":
-#            time.sleep(1)
-#            print(time.time() - start_time >= 1)
             if time.time() - start_time >= 1:
                start_time = time.time()
                timerLostSeconds -= 1
+
                if timerLostSeconds < 1:
-#                   if timerLostMinutes > 0:
-#                       timerLostSeconds = 10
-#                   if timerLostMinutes >= 1:
-#                       timerLostMinutes  -= 1
                    if timerLostMinutes > 0:
                        timerLostSeconds = 60
                        if timerLostMinutes >= 1:
-                           timerLostMinutes -= 1 
+                           timerLostMinutes -= 1
                    else:
                        timerLostSeconds = 0
 
-#            print(timerLostMinutes, timerLostSeconds)
+               if soundsEnabled:
+                   if (timerLostSeconds % 2) == 0 and (timerLostMinutes == 0 and timerLostSeconds > 10):
+                       beepA.stop()
+                       beepB.stop()
+                       beepB.play()
+                   elif timerLostSeconds % 2 == 0 and (timerLostMinutes < 5 and timerLostMinutes > 0):
+                       beepA.stop()
+                       beepB.stop()
+                       beepA.play()
+                   elif timerLostMinutes == 0 and timerLostSeconds <= 10 and timerLostSeconds >= 0:
+                       beepB.stop()
+                       beepA.stop()
+                       beepB.play()
+                   else:
+                       beepA.stop()
+                       beepB.stop()
+
             valueMinutes = list(map(int,str(timerLostMinutes).zfill(3)))
             if timerLostMinutes > 4:
                 valueSeconds = [0, 0]

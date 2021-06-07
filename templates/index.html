@@ -1,0 +1,17 @@
+<button type="button" onclick="setMode('LOST')">LOST SHOW MODE</button>
+<button type="button" onclick="setMode('CLOCK')">CLOCK MODE</button>
+
+<script>
+
+var url = "/switch"
+
+function setMode(mode) {
+	var xmlHttp = new XMLHttpRequest();
+	var theUrl = url + "?mode="+mode;
+	console.log(theUrl)
+	xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+	xmlHttp.send( null );
+	return xmlHttp.responseText;
+}
+
+</script>
