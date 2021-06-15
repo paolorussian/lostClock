@@ -1,3 +1,4 @@
+
 import RPi.GPIO as GPIO
 import time
 import datetime
@@ -54,7 +55,7 @@ beepB = vlc.MediaPlayer("file:///home/pi/Documents/python/lostClock/beepB.mp3")
 hostName = "192.168.0.2"
 serverPort = 8081
 serverEnabled = False
-soundsEnabled = False
+soundsEnabled = True
 
 ######################################################
 
@@ -98,7 +99,7 @@ drumOffsets = [0,0,0,0,0]
 
 simpleCounter = 0
 mode = "CLOCK"
-#mode = "LOST"
+mode = "LOST"
 timerLostMinutes = 109
 #timerLostMinutes = 3
 timerLostSeconds = 00
