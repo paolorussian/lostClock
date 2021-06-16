@@ -15,6 +15,8 @@
     background: #aaa;
   }*/
 	</style>
+
+	
 </head>
 
 <body>
@@ -22,13 +24,21 @@
 	<br>
 	<div class="container-fluid">
 		<div class="card">
-			<div class="card-header">Select mode</div>
+			<div class="card-header">Swan station control panel</div>
 			<div class="card-body">
-				<button type="button" style="margin: 5px;" class="btn btn-danger" onclick="setMode('LOST')">LOST SHOW
+
+				<div class="container-fluid">
+					Power:
+					<button id="btnEnabled" type="button" style="margin: 5px;" class="btn btn-success" onclick="setMode('powerOff')">Enabled</button>
+					<button id="btnDisabled" type="button" style="margin: 5px;" class="btn btn-danger" onclick="setMode('powerOn')">Disabled</button>
+				</div>
+				<br/>
+
+				<button type="button" style="margin: 5px;" class="btn btn-primary" onclick="setMode('LOST')">LOST SHOW
 					MODE</button>
-				<button type="button" style="margin: 5px;" class="btn btn-warning" onclick="setMode('LOST_TEST')">LOST
+				<button type="button" style="margin: 5px;" class="btn btn-primary" onclick="setMode('LOST_TEST')">LOST
 					TEST MODE</button>
-				<button type="button" style="margin: 5px;" class="btn btn-success" onclick="setMode('CLOCK')">CLOCK
+				<button type="button" style="margin: 5px;" class="btn btn-primary" onclick="setMode('CLOCK')">CLOCK
 					MODE</button>
 			</div>
 		</div>
@@ -36,6 +46,22 @@
 	</div>
 
 	<script>
+
+		var queryDict = {};
+        location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+		//console.log(queryDict.enabled);
+		if (queryDict.enabled==='true') {
+			document.getElementById("btnEnabled").style.display = "unset";
+			document.getElementById("btnDisabled").style.display = "none";
+		} else {
+			document.getElementById("btnEnabled").style.display = "none";
+			document.getElementById("btnDisabled").style.display = "unset";
+		}
+
+
+
+
+
 		var url = "/switch"
 
 		function setMode(mode) {
@@ -46,6 +72,10 @@
 			xmlHttp.send(null);
 			return xmlHttp.responseText;
 		}
+
+		var queryDict = {};
+        location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+        console.log(queryDict.enabled);
 
 	</script>
 
