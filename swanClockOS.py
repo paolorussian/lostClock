@@ -4,13 +4,7 @@ import time
 import datetime
 import sys
 import traceback
-#from http.server import BaseHTTPRequestHandler, HTTPServer
-#import http.server
-#from server2 import MyServer
-#from urllib.parse import urlparse
-#import socketserver
 import threading
-#import vlc
 import os
 from flask import (Flask, render_template, request)
 
@@ -60,14 +54,7 @@ def changeMode():
         mode="LOST"
         isCalibrated=[False,False,False,False,False]
         
-    #print("post",mode)
     return render_template("index.html")
-
-
-
-#/home/pi/Documents/python/lostClock
-#beepA = vlc.MediaPlayer("file:///home/pi/Documents/python/lostClock/beepA.mp3")
-#beepB = vlc.MediaPlayer("file:///home/pi/Documents/python/lostClock/beepB.mp3")
 
 
 hostName = "192.168.0.2"
@@ -130,10 +117,6 @@ flapsHieroglyphPosition = 1024
 flapsEmptyPosition = 922
 
 def readSensors():
-    #global pinSensors
-    #global isSensorHit
-    #global isCalibrated
-
     for drum in range(numberOfDrums):
 
         if GPIO.input(pinSensors[drum]):
@@ -152,14 +135,6 @@ def readSensors():
 
 ###########################################
 def moveDrums():
-#    global pinSensors
-#    global drumTargetPositions
-#    global isCalibrated
-#    global isDrumActive
-#    global numberOfDrums
-#    global drumPositions
-#    global fullTurn
-#    global controlPins
 
     for step in range(4):
         for pin in range(4):
@@ -280,15 +255,6 @@ try:
 
         readSensors()
         moveDrums()
-
-#        if True:
-#        if isDrumActive[0] == False and isDrumActive[1] == False and isDrumActive[2] == False and isDrumActive[3] == False and isDrumActive[4] == False:
-#            if mode == "LOST" and timerLostMinutes >= 0:
-#                time.sleep(1)
-#                timerLostSeconds -= 1
-#                if timerLostSeconds < 0:
-#                    timerLostSeconds = 60
-#                    timerLostMinutes -= 1
 
 except KeyboardInterrupt:
     print("Interrupted by keyboard")
