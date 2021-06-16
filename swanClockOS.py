@@ -27,23 +27,40 @@ def changeMode():
     global start_time
     global current_time
     global isCalibrated
+    global timerLostMinutes
+    global timerLostSeconds
+    global volumeAttenuation
 
     m = request.args.get("mode", type = str)
     print("pre", mode, "will change in", m)
 
     if m=="LOST":
         print("setting LOST")
+        start_time=time.time()
+        current_time=start_time
         mode=m
         timerLostMinutes = 109
         timerLostSeconds = 00
+        volumeAttenuation = "-100"
+        isCalibrated=[False,False,False,False,False]
     elif m=="CLOCK":
         print("setting CLOCK")
         start_time=time.time()
         current_time=start_time
         mode=m
         isCalibrated=[False,False,False,False,False]
-
-    print("post",mode)
+    elif m=="LOST_TEST":
+        print("setting LOST TEST")
+        
+        start_time=time.time()
+        current_time=start_time
+        timerLostMinutes = 2
+        timerLostSeconds = 00
+        volumeAttenuation = "-1000"
+        mode="LOST"
+        isCalibrated=[False,False,False,False,False]
+        
+    #print("post",mode)
     return render_template("index.html")
 
 
@@ -57,7 +74,7 @@ hostName = "192.168.0.2"
 serverPort = 8081
 serverEnabled = False
 soundsEnabled = True
-
+volumeAttenuation = "-100"
 ######################################################
 
 
@@ -202,13 +219,13 @@ try:
                if soundsEnabled:
                    if (timerLostSeconds % 2) == 0 and (timerLostMinutes == 0 and timerLostSeconds > 10):
                        #os.system('mpg321 /home/pi/Documents/python/lostClock/beepB.mp3 &')
-                       os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/beepB.mp3 &')
+                       os.system('omxplayer  --no-keys --vol '+ volumeAttenuation + ' /home/pi/Documents/python/lostClock/beepB.mp3 &')
                    elif timerLostSeconds % 2 == 0 and (timerLostMinutes < 5 and timerLostMinutes > 0):
                        #os.system('mpg321 /home/pi/Documents/python/lostClock/beepA.mp3 &')
-                       os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/beepA.mp3 &')
+                       os.system('omxplayer  --no-keys --vol '+ volumeAttenuation + ' /home/pi/Documents/python/lostClock/beepA.mp3 &')
                    elif timerLostMinutes == 0 and timerLostSeconds <= 10 and timerLostSeconds >= 1:
                        #os.system('mpg321 /home/pi/Documents/python/lostClock/beepB.mp3 &')
-                       os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/beepB.mp3 &')
+                       os.system('omxplayer  --no-keys --vol '+ volumeAttenuation + ' /home/pi/Documents/python/lostClock/beepB.mp3 &')
                    
 
             valueMinutes = list(map(int,str(timerLostMinutes).zfill(3)))
@@ -219,6 +236,9 @@ try:
 
             flapTargets = [valueMinutes[0],valueMinutes[1],valueMinutes[2], valueSeconds[0],valueSeconds[1]]
             flapTargets.reverse()
+            
+            if timerLostMinutes == 0 and timerLostSeconds == 0:
+                flapTargets = [-1,-1,-1,-1,-1]
 
         elif mode == "CLOCK":
             now = datetime.datetime.now()
@@ -242,7 +262,10 @@ try:
                     elif mode == "LOST":
                         newPos = flapsTimer[flapTargets[drum]] * stepsPerFlap
                 else:
-                    newPos = flapsEmptyPosition
+                    if mode == "CLOCK":
+                        newPos = flapsEmptyPosition
+                    elif mode == "LOST":
+                        newPos = flapsHieroglyphPosition
 
                 if newPos < drumTargetPositions[drum]:
                     newPos += fullTurn
