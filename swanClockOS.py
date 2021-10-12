@@ -43,6 +43,7 @@ def changeMode():
         start_time=time.time()
         current_time=start_time
         mode=m
+        volumeAttenuation = "-100"
         isCalibrated=[False,False,False,False,False]
     elif m=="LOST_TEST":
         print("setting LOST TEST")
@@ -180,6 +181,7 @@ try:
         app.config.host = "0.0.0.0"
         threading.Thread(target=serverStart).start()
 
+    os.system('omxplayer  --no-keys --vol '+ volumeAttenuation + ' /home/pi/Documents/python/lostClock/GLaDOS-clockonline.wav &')
     start_time = time.time()
     current_time = start_time
 
