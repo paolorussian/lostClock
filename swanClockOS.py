@@ -38,12 +38,13 @@ def changeMode():
         timerLostSeconds = 00
         volumeAttenuation = "-100"
         isCalibrated=[False,False,False,False,False]
+        os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/GLaDOS-timermode.wav &')
     elif m=="CLOCK":
         print("setting CLOCK")
         start_time=time.time()
         current_time=start_time
         mode=m
-        volumeAttenuation = "-100"
+        os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/GLaDOS-clockmode.wav &')
         isCalibrated=[False,False,False,False,False]
     elif m=="LOST_TEST":
         print("setting LOST TEST")
@@ -54,6 +55,7 @@ def changeMode():
         timerLostSeconds = 00
         volumeAttenuation = "-1000"
         mode="LOST"
+        os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/GLaDOS-timermode.wav &')
         isCalibrated=[False,False,False,False,False]
     elif m=="powerOn":
         print("power on!")
@@ -181,7 +183,7 @@ try:
         app.config.host = "0.0.0.0"
         threading.Thread(target=serverStart).start()
 
-    os.system('omxplayer  --no-keys --vol '+ volumeAttenuation + ' /home/pi/Documents/python/lostClock/GLaDOS-clockonline.wav &')
+    os.system('omxplayer  --no-keys --vol -100 /home/pi/Documents/python/lostClock/GLaDOS-clockonline.wav &')
     start_time = time.time()
     current_time = start_time
 
