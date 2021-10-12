@@ -8,12 +8,13 @@ import threading
 import os
 from flask import (Flask, render_template, request)
 
+isPowerOn = True
 
 
 app = Flask(__name__)
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html",enabled=isPowerOn)
 
 @app.route("/switch")
 def changeMode():
@@ -53,8 +54,22 @@ def changeMode():
         volumeAttenuation = "-1000"
         mode="LOST"
         isCalibrated=[False,False,False,False,False]
-        
-    return render_template("index.html")
+    elif m=="powerOn":
+        print("power on!")
+        isPowerOn = True
+    elif m=="powerOff":
+        print("power off!")
+        isPowerOn = False
+    elif m=="HIEROGLYPH":
+        print("setting HIEROGLYPH")
+        mode="HIEROGLYPH"
+        isCalibrated=[False,False,False,False,False]
+    elif m=="BLANK":
+        print("setting BLANK")
+        mode="BLANK"
+        isCalibrated=[False,False,False,False,False]
+    
+    return render_template("index.html",enabled=isPowerOn)
 
 
 hostName = "192.168.0.2"
@@ -222,6 +237,10 @@ try:
             flapTargets = [-1, hourArr[0], hourArr[1], minArr[0], minArr[1]]
             flapTargets.reverse()
 
+        elif mode == "HIEROGLYPH":
+            flapTargets = [flapsHieroglyphPosition, flapsHieroglyphPosition, flapsHieroglyphPosition, flapsHieroglyphPosition, flapsHieroglyphPosition]
+        elif mode == "BLANK":
+            flapTargets = [flapsEmptyPosition, flapsEmptyPosition, flapsEmptyPosition, flapsEmptyPosition, flapsEmptyPosition]
 
 
         for drum in range(numberOfDrums):
@@ -236,6 +255,8 @@ try:
                         newPos = flapsCrono[flapTargets[drum]] * stepsPerFlap
                     elif mode == "LOST":
                         newPos = flapsTimer[flapTargets[drum]] * stepsPerFlap
+                    else:
+                        newPos = flapTargets[drum]
                 else:
                     if mode == "CLOCK":
                         newPos = flapsEmptyPosition
