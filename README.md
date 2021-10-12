@@ -42,7 +42,14 @@ Also note that in this project the numbering is [0,1,2,3,4,5,6,7,8, BLANK, HIERO
 
 ![photo interrupter](https://github.com/paolorussian/lostClock/blob/451074e7f9f27683f22044545b78cf1b7188a1a2/images/imageB.jpg) *photo interrupter*
 
-![webserver](https://github.com/paolorussian/lostClock/blob/7ecc90296b30de98ed7c18913465e39b8d1c72f9/images/webserver.png) *web interface to switch or reset mode*
+![webserver](https://github.com/paolorussian/lostClock/blob/d7406d7a1d49110ccc11fb043a683da13de93d63/images/webserver.png)
+
+*web interface to switch between modes*
+- lost show mode: full 109 minute timer (108.59.99...), under 4 minutes "seconds" drums are enabled, with sounds (volume 100%)
+- lost test mode: same as lost show mode but the timer starts at 2 minutes, with 50% volume
+- hieroglyph: displays hieroglyphs on each drum (static)
+- blank: display blank flaps on each drum (static)
+- clock mode: works as a regular HH:MM clock. As the raspberry pi hasn't got any battery to store time, and there's no real time clock, time is got from the internet as soon as the raspberry pi manages to connect to the wifi. It usually takes a minute or two, depending on the signal strenght and (mostly) Murphy's laws.
 
 
 credits:
